@@ -14,9 +14,36 @@ from pox.lib.addresses import EthAddr
 
 
 def firewall_policy_processing(policies):
+    '''
+    This is where you are to implement your code that will build POX/Openflow Match and Action operations to
+    create a dynamic firewall meeting the requirements specified in your configure.pol file.  Do NOT hardcode
+    the IP/MAC Addresses/Protocols/Ports that are specified in the project description - this code should use
+    the values provided in the configure.pol to implement the firewall.
+
+    The policies passed to this function is a list of dictionary objects that contain the data imported from the
+    configure.pol file.  The policy variable in the "for policy in policies" represents a single line from the
+    configure.pol file.  Each of the configuration values are then accessed using the policy['field'] command. 
+    The fields are:  'rulenum','action','mac-src','mac-dst','ip-src','ip-dst','ipprotocol','port-src','port-dst',
+    'comment'.
+
+    Your return from this function is a list of flow_mods that represent the different rules in your configure.pol file.
+
+    Implementation Hints:
+    The documentation for the POX controller is available at https://noxrepo.github.io/pox-doc/html .  This project
+    is using the gar-experimental branch of POX in order to properly support Python 3.  To complete this project, you
+    need to use the OpenFlow match and flow_modification routines (https://noxrepo.github.io/pox-doc/html/#openflow-messages
+    for flow_mod and https://noxrepo.github.io/pox-doc/html/#match-structure for match.)  Also, do NOT wrap IP Addresses with
+    IPAddr() unless you reformat the CIDR notation.  Look at the https://github.com/att/pox/blob/master/pox/lib/addresses.py
+    for what POX is expecting as an IP Address.
+    '''
+
     rules = []
 
     for policy in policies:
+        # Enter your code here to implement matching and block/allow rules.  See the links
+        # in Implementation Hints on how to do this. 
+        # HINT:  Think about how to use the priority in your flow modification.
+
         rule = of.ofp_flow_mod()
 
         has_ip_match = any(policy[field] != '-' for field in (
@@ -55,7 +82,9 @@ def firewall_policy_processing(policies):
         else:
             rule.priority = 10000
 
-        print('Added Rule ', policy['rulenum'], ': ', policy['comment'])
+        # End Code Here
+        print('Added Rule ',policy['rulenum'],': ',policy['comment'])
+        #print(rule)   #Uncomment this to debug your "rule"
         rules.append(rule)
-
+    
     return rules
