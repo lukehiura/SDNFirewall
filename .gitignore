@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+*.swp
+*~
+
+# Files copied into test-suite dirs during test runs
+test-suite/alt/sdn-firewall.py
+test-suite/standard/sdn-firewall.py
+test-suite/standard/configure.pol

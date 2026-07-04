@@ -24,5 +24,41 @@
 # subnet other than /32 must be 0.
 #
 # Example Rules:
-1,Block,-,-,10.0.0.1/32,10.0.1.0/24,6,-,80,Block 10.0.0.1 from accessing a web server on the 10.0.1.0/24 network
-2,Allow,-,-,10.0.0.1/32,10.0.1.125/32,6,-,80,Allow 10.0.0.1 to access a web server on 10.0.1.125 overriding previous rule
+#1,Block,-,-,10.0.0.1/32,10.0.1.0/24,6,-,80,Block 10.0.0.1 from accessing a web server on the 10.0.1.0/24 network
+#2,Allow,-,-,10.0.0.1/32,10.0.1.125/32,6,-,80,Allow 10.0.0.1 to access a web server on 10.0.1.125 overriding previous rule
+#
+# hq=10.0.0.0/24 us=10.0.1.0/24 in=10.0.20.0/24 cn=10.0.30.0/24 uk=10.0.40.0/24
+# protocol: tcp=6; udp=17; icmp=1
+# task 1
+# cn4=10.0.30.4
+1.1,Block,-,-,10.0.30.4/32,-,6,-,-,block cn4 tcp outbound
+# task 2
+# cn5=10.0.30.5
+2.1,Block,-,-,10.0.30.5/32,-,-,-,-,block cn5 outbound
+2.2,Block,-,-,-,10.0.30.5/32,-,-,-,block cn5 inbound
+# task 3
+3.1,Block,-,-,-,10.0.1.0/24,1,-,-,block icmp to us
+3.2,Block,-,-,-,10.0.20.0/24,1,-,-,block icmp to in
+3.3,Block,-,-,-,10.0.40.0/24,1,-,-,block icmp to uk
+3.4,Allow,-,-,10.0.0.0/24,10.0.1.0/24,1,-,-,allow hq icmp to us
+3.5,Allow,-,-,10.0.0.0/24,10.0.20.0/24,1,-,-,allow hq icmp to in
+3.6,Allow,-,-,10.0.0.0/24,10.0.40.0/24,1,-,-,allow hq icmp to uk
+# task 4
+# cn3=10.0.30.3
+4.1,Block,-,-,10.0.30.3/32,-,6,80,-,block cn3 http responses
+4.2,Block,-,-,10.0.30.3/32,-,6,443,-,block cn3 https responses
+# task 5
+# us3/us4=10.0.1.32/30
+5.1,Block,-,-,10.0.40.128/30,10.0.1.32/30,6,-,9520,block uk group to us3/us4 port 9520
+5.2,Block,-,-,10.0.20.124/30,10.0.1.32/30,6,-,9520,block in group to us3/us4 port 9520
+5.3,Block,-,-,10.0.1.125/32,10.0.1.32/30,6,-,9520,block us5 to us3/us4 port 9520
+5.4,Block,-,-,10.0.0.220/32,10.0.1.32/30,6,-,9520,block hq5 to us3/us4 port 9520
+# task 6
+# us1 mac=00:00:00:01:00:1e
+6.1,Block,00:00:00:01:00:1e,-,-,-,17,-,-,block cloned us1 mac udp
+# task 7
+7.1,Block,-,-,-,10.0.0.0/24,6,-,25,block smtp to hq
+7.2,Block,-,-,-,10.0.1.0/24,6,-,25,block smtp to us
+7.3,Block,-,-,-,10.0.20.0/24,6,-,25,block smtp to in
+7.4,Block,-,-,-,10.0.30.0/24,6,-,25,block smtp to cn
+7.5,Block,-,-,-,10.0.40.0/24,6,-,25,block smtp to uk
